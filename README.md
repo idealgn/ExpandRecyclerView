@@ -1,0 +1,2 @@
+# ExpandRecyclerView
+通过RecyclerView实现二级列表，只做了简单的数据显示,下一步给child增加多选功能
