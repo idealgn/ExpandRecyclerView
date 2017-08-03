@@ -86,20 +86,39 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
     private OnParentItemClickListener listener = new OnParentItemClickListener() {
         @Override
         public void expand(ParentBean parentBean,List<WrapperBean> childWrapperBeanList) {
+            int groupPosition = 0;
+            int size = wrapperBeanList.size();
+            for (int x = 0; x < size; x++) {
+                ParentBean bean = wrapperBeanList.get(x).getParentBean();
+                if (bean==null)continue;
+                if (parentBean.getName().equals(bean.getName())) {
+                    groupPosition = x;
+                    break;
+                }
+            }
             //这里是重点
-            if (childWrapperBeanList==null||childWrapperBeanList.size()==0)return;
-           int groupPosition =  getRealPosition(parentBean);
+//           int groupPosition =  getRealPosition(parentBean);
             for (WrapperBean wrapperBean : childWrapperBeanList) {
                 addItem(++groupPosition,wrapperBean);
             }
 
-            if (groupPosition<=wrapperBeanList.size()-2&&mOnScrollListener!=null)
+            if (groupPosition<= size -2&&mOnScrollListener!=null)
                 mOnScrollListener.scrollTo(groupPosition);
         }
 
         @Override
         public void hide(ParentBean parentBean, List<WrapperBean> childWrapperBeanList) {
-            int realPosition = getRealPosition(parentBean);
+            int realPosition = 0;
+            int size = wrapperBeanList.size();
+            for (int x = 0; x < size; x++) {
+                ParentBean bean = wrapperBeanList.get(x).getParentBean();
+                if (bean==null)continue;
+                if (parentBean.getName().equals(bean.getName())) {
+                    realPosition = x;
+                    break;
+                }
+            }
+//            int realPosition = getRealPosition(parentBean);
             for (WrapperBean wrapperBean : childWrapperBeanList) {
                 removeItem(realPosition+1);
             }
