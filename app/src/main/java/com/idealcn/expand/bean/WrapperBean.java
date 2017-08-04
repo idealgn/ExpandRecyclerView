@@ -11,6 +11,8 @@ public class WrapperBean {
     private ChildBean childBean;
     private List<WrapperBean> childWrapperBeanList;
 
+    public WrapperBean(){}
+
     public WrapperBean(ParentBean parentBean) {
         this.parentBean = parentBean;
     }

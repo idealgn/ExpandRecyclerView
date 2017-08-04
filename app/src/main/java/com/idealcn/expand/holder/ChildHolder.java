@@ -1,5 +1,8 @@
 package com.idealcn.expand.holder;
 
+import android.widget.CompoundButton;
+
+import com.idealcn.expand.OnChildItemClickListener;
 import com.idealcn.expand.bean.ChildBean;
 import com.idealcn.expand.bean.WrapperBean;
 import com.idealcn.expand.databinding.ItemChildBinding;
@@ -15,7 +18,14 @@ public class ChildHolder extends BaseHolder {
         this.childBinding = childBinding;
     }
 
-    public void bindView(int position, ChildBean childBean) {
+    public void bindView(final int position, final ChildBean childBean, final OnChildItemClickListener clickListener) {
         childBinding.tvChild.setText(childBean.getName());
+        childBinding.cbChild.setChecked(childBean.isState());
+        childBinding.cbChild.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean check) {
+                clickListener.onChildItemClick(position,childBean,check);
+            }
+        });
     }
 }

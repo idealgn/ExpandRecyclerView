@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 
 import com.idealcn.expand.bean.ChildBean;
 import com.idealcn.expand.bean.ParentBean;
@@ -22,24 +23,26 @@ public class MainActivity extends AppCompatActivity {
         final ActivityMainBinding mainBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
 
         List<WrapperBean> wrapperBeanList = new ArrayList<>();
-        ParentBean parentBean = null;
+        ParentBean parentBean;
+        WrapperBean wrapperBean;
         List<WrapperBean> childWrapperBeanList = null;
         for (int x = 0; x < 10; x++) {
+            wrapperBean = new WrapperBean();
             parentBean = new ParentBean();
             childWrapperBeanList = new ArrayList<>();
             parentBean.setName("parent--"+x);
             parentBean.setGroupPosition(x);
-            ChildBean childBean = null;
+            ChildBean childBean;
             for (int y = 0; y < Math.random() * 10; y++) {
                 childBean = new ChildBean();
                 childBean.setName("child--"+y);
+                childBean.setParentBean(parentBean);
                 childWrapperBeanList.add(new WrapperBean(childBean));
             }
-            parentBean.setChilWrapperBeanList(childWrapperBeanList);
-            wrapperBeanList.add(new WrapperBean(parentBean));
+            wrapperBean.setParentBean(parentBean);
+            wrapperBean.setChildWrapperBeanList(childWrapperBeanList);
+            wrapperBeanList.add(wrapperBean);
         }
-
-
 
         MyAdapter myAdapter = new MyAdapter(this,wrapperBeanList);
         mainBinding.recyclerView.setAdapter(myAdapter);

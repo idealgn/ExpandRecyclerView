@@ -13,7 +13,7 @@ public class ParentBean {
     private String name;
     private int groupPosition;
     private boolean expand;
-    private List<WrapperBean> chilWrapperBeanList;
+//    private List<WrapperBean> chilWrapperBeanList;
 
     public boolean isExpand() {
         return expand;
@@ -39,11 +39,11 @@ public class ParentBean {
         this.groupPosition = groupPosition;
     }
 
-    public List<WrapperBean> getChilWrapperBeanList() {
-        return chilWrapperBeanList;
-    }
-
-    public void setChilWrapperBeanList(List<WrapperBean> chilWrapperBeanList) {
-        this.chilWrapperBeanList = chilWrapperBeanList;
-    }
+//    public List<WrapperBean> getChilWrapperBeanList() {
+//        return chilWrapperBeanList;
+//    }
+//
+//    public void setChilWrapperBeanList(List<WrapperBean> chilWrapperBeanList) {
+//        this.chilWrapperBeanList = chilWrapperBeanList;
+//    }
 }

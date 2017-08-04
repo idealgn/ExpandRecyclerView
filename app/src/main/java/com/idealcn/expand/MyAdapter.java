@@ -15,7 +15,9 @@ import com.idealcn.expand.holder.BaseHolder;
 import com.idealcn.expand.holder.ChildHolder;
 import com.idealcn.expand.holder.ParentHolder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ideal on 17-8-2.
@@ -25,6 +27,7 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
     private LayoutInflater layoutInflater;
     private Context context;
     private  List<WrapperBean> wrapperBeanList;
+    private Map<String,OnChildItemClickListener> childItemClickListenerMap = new HashMap<>();
     public MyAdapter(Context context, List<WrapperBean> wrapperBeanList){
         this.context = context;
         this.wrapperBeanList = wrapperBeanList;
@@ -55,17 +58,20 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
         switch (getItemViewType(position)){
             case ParentBean.TYPE_PARENT: {
                 ParentHolder parentHolder = (ParentHolder) holder;
-                parentHolder.bindView(position,wrapperBean.getParentBean(),listener);
+                parentHolder.bindView(position,wrapperBean.getParentBean(),wrapperBean.getChildWrapperBeanList(),listener);
                 break;
             }
             case ChildBean.TYPE_CHILD: {
                 ChildHolder childHolder = (ChildHolder) holder;
-                childHolder.bindView(position,wrapperBean.getChildBean());
+                //child绑定的click在parent折叠时应该解绑
+                ChildBean childBean = wrapperBean.getChildBean();
+                childItemClickListenerMap.put(childBean.getName(),clickListener);
+                childHolder.bindView(position, childBean,childItemClickListenerMap.get(childBean.getName()));
                 break;
             }
             default:{
                 ParentHolder parentHolder = (ParentHolder) holder;
-                parentHolder.bindView(position, wrapperBean.getParentBean(), listener);
+                parentHolder.bindView(position, wrapperBean.getParentBean(), wrapperBean.getChildWrapperBeanList(), listener);
                 break;
             }
         }
@@ -82,6 +88,19 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
         ParentBean parentBean = wrapperBean.getParentBean();
         return parentBean==null?ChildBean.TYPE_CHILD:ParentBean.TYPE_PARENT;
     }
+
+    private OnChildItemClickListener clickListener = new OnChildItemClickListener() {
+        @Override
+        public void onChildItemClick(int position, ChildBean childBean, boolean check) {
+            for (WrapperBean wrapperBean : wrapperBeanList) {
+                ChildBean bean = wrapperBean.getChildBean();
+                if (bean!=null&&childBean.getName().equals(bean.getName())){
+                    bean.setState(check);
+                }
+            }
+        }
+    };
+
 
     private OnParentItemClickListener listener = new OnParentItemClickListener() {
         @Override
@@ -120,12 +139,19 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
             }
 //            int realPosition = getRealPosition(parentBean);
             for (WrapperBean wrapperBean : childWrapperBeanList) {
+                childItemClickListenerMap.remove( wrapperBean.getChildBean().getName());
                 removeItem(realPosition+1);
             }
             if (mOnScrollListener!=null)
                 mOnScrollListener.scrollTo(realPosition);
         }
     };
+
+    private void addItem(int position, WrapperBean wrapperBean) {
+        wrapperBeanList.add(position,wrapperBean);
+        notifyItemInserted(position);
+    }
+
 
     private void removeItem(int realPosition) {
         wrapperBeanList.remove(realPosition);
@@ -143,16 +169,12 @@ public class MyAdapter extends RecyclerView.Adapter<BaseHolder> {
             if (bean.isExpand()){//只处理展开的
                 //因为不管是parent还是child，其本质都是RecyclerView的一个item,动态的增删数据集肯定会引起某个item的位置发生变化，这里是用来
                 //获取item正确的位置
-                groupPosition += bean.getChilWrapperBeanList().size();//
+//                groupPosition += bean.getChilWrapperBeanList().size();//
             }
         }
         return groupPosition;
     }
 
-    private void addItem(int position, WrapperBean wrapperBean) {
-        wrapperBeanList.add(position,wrapperBean);
-        notifyItemInserted(position);
-    }
 
     private OnListScrollListener mOnScrollListener;
 
